@@ -4,7 +4,7 @@ subtitle:    ""
 description: "Linux和git的命令笔记"
 date:        2018-06-04
 author:      "yxq"
-image:       "img/dzq/1"
+image:       "img/dzq/1.png"
 tags:        ["计算机系统"]
 categories:  ["计算机系统"]
 ---

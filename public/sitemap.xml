@@ -32,15 +32,5 @@
     <loc>http://localhost:1313/archive/</loc>
   </url><url>
     <loc>http://localhost:1313/search/</loc>
-  </url><url>
-    <loc>http://localhost:1313/tags/tag1/</loc>
-  </url><url>
-    <loc>http://localhost:1313/tags/tag2/</loc>
-  </url><url>
-    <loc>http://localhost:1313/categories/tech/</loc>
-  </url><url>
-    <loc>http://localhost:1313/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/</loc>
-  </url><url>
-    <loc>http://localhost:1313/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA/</loc>
   </url>
 </urlset>

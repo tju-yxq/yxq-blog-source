@@ -1,4 +1,4 @@
-baseurl = "https://zhaohuabing.com"
+baseurl = "https://tju-yxq.github.io/"
 title = "小段子的博客"
 theme = "hugo-theme-cleanwhite"
 languageCode = "en-us"
@@ -44,7 +44,7 @@ home = ["HTML", "RSS", "Algolia"]
   # Sidebar settings
   sidebar_about_description = "天大智算24级网安本科在读，爱运动，爱学习，羽毛球乒乓球篮球足球台球麻将桌游剧本杀等等都是爱好嘿嘿"
   #sidebar_avatar = "img/avatar-zhaohuabing.jpg"      # use absolute URL, seeing it's used in both `/` and `/about/`
-  sidebar_avatar = "img/yxq.png"      # use absolute URL, seeing it's used in both `/` and `/about/`
+  sidebar_avatar = "img/yxq.jpg"      # use absolute URL, seeing it's used in both `/` and `/about/`
 
   featured_tags = true 
   featured_condition_size = 1 
@@ -125,11 +125,11 @@ home = ["HTML", "RSS", "Algolia"]
   [[params.additional_menus]]
   title =  "ARCHIVE"
   href =  "/archive/"
+  #[[params.additional_menus]]
+  #title =  "NOTES"
+  #href =  "/notes/"
   [[params.additional_menus]]
-  title =  "NOTES"
-  href =  "/notes/"
-  [[params.additional_menus]]
-  title =  "ABOUT"
+  title =  "关于"
   href =  "/about/"
 
 [outputFormats.Algolia]
