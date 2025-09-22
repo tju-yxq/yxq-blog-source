@@ -1,0 +1,22 @@
+{{ define "main" }}
+<div class="container">
+    <div class="row">
+        <!-- USE SIDEBAR -->
+        <!-- Post Container -->
+   	    <div class="
+            col-lg-8 col-lg-offset-1
+            col-md-8 col-md-offset-1
+            col-sm-12
+            col-xs-12
+            post-container
+        ">
+        {{ if .Site.Params.algolia_search }}
+            {{ partial "search-algolia.html" . }}
+        {{ else }}
+            {{ partial "search-pagefind.html" . }}
+        {{ end }}
+       	</div>
+        {{ partial "sidebar.html" . }}
+	</div>
+</div>
+{{ end }}
