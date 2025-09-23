@@ -1,5 +1,6 @@
 ---
 title:       "An Example Post"
+layout:      "single"
 subtitle:    ""
 description: ""
 date:        {{.Date}}
