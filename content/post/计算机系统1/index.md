@@ -3,9 +3,9 @@ title:       "计算机系统基础1 笔记1"
 subtitle:    ""
 layout:      "single"
 description: "Linux和git的命令笔记"
-date:        {{.Date}}
+date:        2025-09-22
 author:      "yxq"
-image:       "img/dzq/1.png"
+image:       "/img/home-bg-jeep.jpg"
 tags:        ["计算机系统"]
 categories:  ["计算机系统"]
 ---

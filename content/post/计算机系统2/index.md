@@ -3,9 +3,9 @@ title:       "计算机系统基础1 笔记2"
 subtitle:    "信息的表示与处理"
 layout:      "single"
 description: ""
-date:        {{.Date}}
+date:        2025-09-23
 author:      "小段子"
-image:       "img/dzq/1.png"
+image:       "/img/home-bg-jeep.jpg"
 tags:        ["计算机系统"]
 categories:  ["计算机系统"]
 ---
