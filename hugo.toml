@@ -130,7 +130,7 @@ home = ["HTML", "RSS", "Algolia"]
   #href =  "/notes/"
   [[params.additional_menus]]
   title =  "关于"
-  href =  "/about//?lang=zh"
+  href =  "/about//?lang=zh/"
 
 [outputFormats.Algolia]
 baseName = "algolia"
