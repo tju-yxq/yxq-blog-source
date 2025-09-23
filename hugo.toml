@@ -1,7 +1,7 @@
 baseurl = "https://tju-yxq.github.io/"
-title = "小段子的博客"
+title = "小段子的技术博客"
 theme = "hugo-theme-cleanwhite"
-languageCode = "en-us"
+languageCode = "zh-CN"
 preserveTaxonomyNames = true
 hasCJKLanguage = true
 
