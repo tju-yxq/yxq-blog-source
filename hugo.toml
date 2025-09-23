@@ -163,3 +163,18 @@ params = ["categories", "tags"]
     suffixes = ['woff']
   [mediaTypes.'font/woff2']
     suffixes = ['woff2']
+
+[params.giscus]
+  data_repo="tju-yxq/yxq-blog-source"
+  data_repo_id="R_kgDOP0dLgw"
+  data_category="Comments"
+  data_category_id="DIC_kwDOP0dLg84CvygP"
+  data_mapping="pathname"
+  data_strict="0"
+  data_reactions_enabled="1"
+  data_emit_metadata="0"
+  data_input_position="top"
+  data_theme="light_high_contrast"
+  data_lang="zh-CN"
+  data_loading="lazy"
+  crossorigin="anonymous"
