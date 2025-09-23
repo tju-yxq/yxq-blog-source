@@ -20,11 +20,11 @@ home = ["HTML", "RSS", "Algolia"]
 
 [params]
   header_image = "img/home-bg-jeep.jpg"
-  SEOTitle = "小段子的博客 | xdz's Blog"
-  description = "小段子，天大智算在读本科生, | 这里是 小段子 的博客，与你一起发现更大的世界。"
+  SEOTitle = "'小段子的技术博客"
+  description = "小段子，天大智算在读本科生 | 这里是小段子的博客，与你一起发现更大的世界。"
   keyword = "小段子，网安"
   slogan = "流水不争先，争的是涓涓细流"
-  upstreamAttribution = true
+  upstreamAttribution = false
 
   image_404 = "img/404-bg.jpg"
   title_404 = "你来到了没有知识的荒原 :("
