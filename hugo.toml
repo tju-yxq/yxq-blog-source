@@ -20,7 +20,7 @@ home = ["HTML", "RSS", "Algolia"]
 
 [params]
   header_image = "img/home-bg-jeep.jpg"
-  SEOTitle = "'小段子的技术博客"
+  SEOTitle = "小段子的技术博客"
   description = "小段子，天大智算在读本科生 | 这里是小段子的博客，与你一起发现更大的世界。"
   keyword = "小段子，网安"
   slogan = "流水不争先，争的是涓涓细流"
