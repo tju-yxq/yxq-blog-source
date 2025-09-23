@@ -23,7 +23,7 @@ home = ["HTML", "RSS", "Algolia"]
   SEOTitle = "小段子的博客 | xdz's Blog"
   description = "小段子，天大智算在读本科生, | 这里是 小段子 的博客，与你一起发现更大的世界。"
   keyword = "小段子，网安"
-  slogan = "流水不争先，只争涓涓细流"
+  slogan = "流水不争先，争的是涓涓细流"
   upstreamAttribution = true
 
   image_404 = "img/404-bg.jpg"
@@ -37,9 +37,9 @@ home = ["HTML", "RSS", "Algolia"]
 
   # algolia site search
   algolia_search = true
-  algolia_appId = ""
-  algolia_indexName = ""
-  algolia_apiKey = ""
+  algolia_appId = "5ZQ7C4AZHX"
+  algolia_indexName = "My blog"
+  algolia_apiKey = "d525505f2d6b5177054e412fc11d53ee"
 
   # Sidebar settings
   sidebar_about_description = "天大智算24级网安本科在读，爱运动，爱学习，羽毛球乒乓球篮球足球台球麻将桌游剧本杀等等都是爱好嘿嘿"

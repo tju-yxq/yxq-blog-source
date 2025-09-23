@@ -1,0 +1,24 @@
+{
+  "name": "yxq-blog",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "algolia": "atomic-algolia"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tju-yxq/yxq-blog-source.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tju-yxq/yxq-blog-source/issues"
+  },
+  "homepage": "https://github.com/tju-yxq/yxq-blog-source#readme",
+  "description": "",
+  "dependencies": {
+    "atomic-algolia": "^0.3.19"
+  }
+}
