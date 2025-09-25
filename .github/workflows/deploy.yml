@@ -1,66 +1,52 @@
-# 工作流的名称，会显示在 GitHub 的 Actions 页面上。
 name: Deploy Hugo Site
 
-# --- 触发器 ---
-# on: 定义了什么事件会触发这个工作流。
 on:
-  # push: 当有代码被推送到仓库时触发。
+  # 在推送到 main 分支时触发
   push:
-    # branches: 只在代码被推送到 "main" 分支时触发。
     branches:
       - main
+  # 允许你手动在 Actions 页面触发这个工作流
+  workflow_dispatch:
 
-# --- 任务 ---
-# jobs: 定义了这个工作流包含的所有任务。
+# 设置任务的默认权限
+permissions:
+  contents: write # 允许 actions-gh-pages 推送到仓库
+
 jobs:
-  # deploy: 我们只定义一个名为 "deploy" 的任务。
-  deploy:
-    # runs-on: 指定运行这个任务的虚拟机环境。ubuntu-latest 是一个稳定且常用的选择。
+  build-and-deploy:
     runs-on: ubuntu-latest
-
-    # steps: 定义了这个任务需要按顺序执行的所有步骤。
     steps:
       # --- 第 1 步: 检出源码 ---
-      # 用途: 从你的源码仓库 (yxq-blog-source) 把最新的代码下载到虚拟机里。
       - name: Checkout source code
         uses: actions/checkout@v4
         with:
-          # submodules: 'recursive' 确保也会把你的主题 (hugo-theme-cleanwhite) 一起下载下来。
-          submodules: 'recursive'
+          submodules: 'recursive'  # 必须，用来拉取主题
+          fetch-depth: 0         # 必须，用来获取完整的 git 历史
 
-      # --- 第 2 步: 安装 Hugo ---
-      # 用途: 在虚拟机里安装 Hugo 环境。
+      # --- 第 2 步: 设置 Hugo ---
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v3
         with:
-          # hugo-version: 指定 Hugo 的版本，'latest' 表示最新版。
           hugo-version: 'latest'
-          # extended: true 确保安装的是支持 Sass 的扩展版。
-          extended: true
+          extended: true # 必须，为了 Sass/SCSS
 
-      # --- 第 3 步: 安装 Node.js ---
-      # 用途: 在虚拟机里安装 Node.js 环境，因为更新 Algolia 索引需要 npm。
+      # --- 第 3 步: 设置 Node.js ---
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          # node-version: 指定 Node.js 的版本。18.x 是一个稳定的长期支持版本。
-          node-version: '18'
+          node-version: '18' # 使用一个稳定的 LTS 版本
+          cache: 'npm'
 
       # --- 第 4 步: 安装依赖 ---
-      # 用途: 运行 npm install 来安装 package.json 里定义的工具 (atomic-algolia)。
       - name: Install Node.js dependencies
-        run: npm install
+        run: npm ci
 
       # --- 第 5 步: 构建网站 ---
-      # 用途: 运行 hugo 命令，生成最终的网站到 public 目录。
-      - name: Build website
+      - name: Build site with Hugo
         run: hugo --cleanDestinationDir
 
       # --- 第 6 步: 更新 Algolia 索引 ---
-      # 用途: 运行 npm run algolia，将最新的索引上传。
       - name: Update Algolia index
-        # env: 在这里，我们把之前设置在 GitHub Secrets 里的密钥，作为环境变量注入到这个步骤中。
-        # 脚本会通过环境变量读取这些密钥，而不是 .env 文件。
         env:
           ALGOLIA_APP_ID: ${{ secrets.ALGOLIA_APP_ID }}
           ALGOLIA_ADMIN_KEY: ${{ secrets.ALGOLIA_ADMIN_KEY }}
@@ -69,16 +55,14 @@ jobs:
         run: npm run algolia
 
       # --- 第 7 步: 部署到 GitHub Pages ---
-      # 用途: 将 public 目录下的所有文件，推送到你的 username.github.io 仓库。
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
-          # personal_token: 这里使用了我们创建的个人访问令牌，赋予脚本推送到另一个仓库的权限。
           personal_token: ${{ secrets.PERSONAL_TOKEN }}
-          # publish_dir: 指定要发布哪个目录的内容。
+          external_repository: ${{ github.repository_owner }}/${{ github.repository_owner }}.github.io
           publish_dir: ./public
-          # publish_branch: 指定要推送到目标仓库的哪个分支。对于 Pages 仓库通常是 main 或 master。
           publish_branch: main
-          # user_name 和 user_email: 这次提交在 Git 历史里显示的作者信息。
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
+          commit_message: "Build and deploy from GitHub Actions: ${{ github.sha }}"
+

@@ -2,7 +2,7 @@
 title:       "数据库系统概论考试回忆版"
 subtitle:    ""
 layout:      "single"
-description: "填空，简答，程序设计和综合设计"
+description: "大二下信管课程，填空，简答，程序设计和综合设计"
 date:        2025-06-03
 author:      "小段子"
 image:       "/img/home-bg-jeep.jpg"
