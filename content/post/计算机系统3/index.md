@@ -8,6 +8,7 @@ author:      "小段子"
 image:       "/img/home-bg-jeep.jpg"
 tags:        ["计算机系统"]
 categories:  ["计算机系统"]
+draft:       true
 ---
 
 ## 汇编指令格式

@@ -4,10 +4,11 @@ subtitle:    ""
 layout:      "single"
 description: "Linux和git的命令笔记"
 date:        2025-06-18
-author:      "yxq"
+author:      "小段子"
 image:       "/img/home-bg-jeep.jpg"
 tags:        ["计算机系统"]
 categories:  ["计算机系统"]
+draft:       true
 ---
 
 ### Linux 命令笔记
