@@ -33,7 +33,7 @@ categories:  ["科研"]
 
 ---
 
-## 一、输入预处理阶段 (prepare_block_inputs)
+## 一、输入预处理阶段
 
 ### 1.1 图像输入投影 (img_in)
 
@@ -49,19 +49,11 @@ categories:  ["科研"]
 - FLOPs = 2 × M × N × K (矩阵乘法公式,M=B×L_img, N=D, K=C_in)
 - 内存访问包括: 输入 + 输出 + 权重 + 偏置
 
-### 1.2 条件输入投影 (cond_in, 可选)
-
-**操作**: Linear(C_in + P², D)
-
-| 阶段         | 操作   | 计算负载 (FLOPs)                                           | 内存访问 (Bytes)                                             |
-| ------------ | ------ | ---------------------------------------------------------- | ------------------------------------------------------------ |
-| 条件输入投影 | Linear | $2 \times B \times L_{img} \times (C_{in} + P^2) \times D$ | $B \times L_{img} \times (C_{in} + P^2 + D) \times 4 + ((C_{in} + P^2) \times D + D) \times 4$ |
-
-### 1.3 时间步嵌入 (time_in)
+### 1.2 时间步嵌入 (time_in)
 
 **操作**: timestep_embedding → MLPEmbedder
 
-#### 1.3.1 Timestep Embedding
+#### 1.2.1 Timestep Embedding
 
 | 阶段                 | 操作          | 计算负载 (FLOPs)        | 内存访问 (Bytes)        |
 | -------------------- | ------------- | ----------------------- | ----------------------- |
@@ -72,7 +64,7 @@ categories:  ["科研"]
 - 包括 cos、sin、exp 计算
 - 输出维度固定为 256
 
-#### 1.3.2 MLPEmbedder (time_in)
+#### 1.2.2 MLPEmbedder
 
 **操作**: Linear(256, D) → SiLU → Linear(D, D)
 
@@ -82,7 +74,7 @@ categories:  ["科研"]
 | SiLU 激活  | Elementwise | $B \times D \times 3$            | $B \times D \times 4 \times 2$                              |
 | MLP 第二层 | Linear      | $2 \times B \times D \times D$   | $B \times (D + D) \times 4 + (D \times D + D) \times 4$     |
 
-### 1.4 向量输入投影 (vector_in)
+### 1.3 向量输入投影
 
 **操作**: MLPEmbedder(D_vec, D)
 
@@ -92,18 +84,7 @@ categories:  ["科研"]
 | SiLU 激活  | Elementwise | $B \times D \times 3$                | $B \times D \times 4 \times 2$                               |
 | MLP 第二层 | Linear      | $2 \times B \times D \times D$       | $B \times (D + D) \times 4 + (D \times D + D) \times 4$      |
 
-### 1.5 引导强度嵌入 (guidance_in, 可选)
-
-**操作**: MLPEmbedder(256, D)
-
-| 阶段               | 操作          | 计算负载 (FLOPs)                 | 内存访问 (Bytes)                                            |
-| ------------------ | ------------- | -------------------------------- | ----------------------------------------------------------- |
-| Timestep Embedding | Trigonometric | $B \times 256 \times 4$          | $B \times 256 \times 4$                                     |
-| MLP 第一层         | Linear        | $2 \times B \times 256 \times D$ | $B \times (256 + D) \times 4 + (256 \times D + D) \times 4$ |
-| SiLU 激活          | Elementwise   | $B \times D \times 3$            | $B \times D \times 4 \times 2$                              |
-| MLP 第二层         | Linear        | $2 \times B \times D \times D$   | $B \times (D + D) \times 4 + (D \times D + D) \times 4$     |
-
-### 1.6 文本输入投影 (txt_in)
+### 1.4 文本输入投影 
 
 **操作**: Linear(D_ctx, D)
 
@@ -111,11 +92,11 @@ categories:  ["科研"]
 | -------- | ------ | --------------------------------------------------- | ------------------------------------------------------------ |
 | 文本投影 | Linear | $2 \times B \times L_{txt} \times D_{ctx} \times D$ | $B \times L_{txt} \times (D_{ctx} + D) \times 4 + (D_{ctx} \times D + D) \times 4$ |
 
-### 1.7 位置编码 (pe_embedder)
+### 1.5 位置编码 
 
 **操作**: EmbedND 或 LigerEmbedND
 
-#### 1.7.1 标准 RoPE (EmbedND)
+#### 1.5.1 标准 RoPE 
 
 | 阶段      | 操作                      | 计算负载 (FLOPs)                               | 内存访问 (Bytes)                        |
 | --------- | ------------------------- | ---------------------------------------------- | --------------------------------------- |
@@ -126,7 +107,7 @@ categories:  ["科研"]
 - n_axes: 位置编码的轴数量 (通常为3: T, H, W)
 - 包含 cos、sin 和张量重排操作
 
-#### 1.7.2 Liger RoPE (LigerEmbedND)
+#### 1..2 Liger RoPE 
 
 | 阶段      | 操作          | 计算负载 (FLOPs)                               | 内存访问 (Bytes)                        |
 | --------- | ------------- | ---------------------------------------------- | --------------------------------------- |
@@ -134,7 +115,7 @@ categories:  ["科研"]
 
 ---
 
-## 二、Double Stream Block (N_double 层)
+## 二、Double Stream Block
 
 Double Stream Block 分别处理图像流和文本流,但共享位置编码。
 
@@ -159,7 +140,9 @@ Double Stream Block 分别处理图像流和文本流,但共享位置编码。
 | LayerNorm (img)     | Normalization | $B \times L_{img} \times D \times 5$ | $B \times L_{img} \times D \times 4 \times 3$ |
 | Scale + Shift (img) | Elementwise   | $B \times L_{img} \times D \times 2$ | $B \times L_{img} \times D \times 4 \times 2$ |
 
-#### 2.2.2 QKV 投影 (Fused 模式)
+#### 2.2.2 QKV 投影
+
+- **Fused模式**：Open Sora默认，速度更快
 
 **操作**: Linear(D, 3×D)
 
@@ -168,7 +151,7 @@ Double Stream Block 分别处理图像流和文本流,但共享位置编码。
 | QKV 投影 (img) | Linear | $2 \times B \times L_{img} \times D \times 3D$ | $B \times L_{img} \times (D + 3D) \times 4 + (D \times 3D + 3D) \times 4$ |
 | Rearrange      | Memory | $0$                                            | $B \times L_{img} \times 3D \times 4$                        |
 
-#### 2.2.3 QKV 投影 (非 Fused 模式)
+- **非 Fused 模式**
 
 | 阶段         | 操作   | 计算负载 (FLOPs)                              | 内存访问 (Bytes)                                             |
 | ------------ | ------ | --------------------------------------------- | ------------------------------------------------------------ |
@@ -176,7 +159,7 @@ Double Stream Block 分别处理图像流和文本流,但共享位置编码。
 | K 投影 (img) | Linear | $2 \times B \times L_{img} \times D \times D$ | $B \times L_{img} \times 2D \times 4 + (D \times D + D) \times 4$ |
 | V 投影 (img) | Linear | $2 \times B \times L_{img} \times D \times D$ | $B \times L_{img} \times 2D \times 4 + (D \times D + D) \times 4$ |
 
-#### 2.2.4 QK Normalization
+#### 2.2.3 QK Normalization
 
 **操作**: RMSNorm (Fused)
 
@@ -196,14 +179,16 @@ Double Stream Block 分别处理图像流和文本流,但共享位置编码。
 | LayerNorm (txt)     | Normalization | $B \times L_{txt} \times D \times 5$ | $B \times L_{txt} \times D \times 4 \times 3$ |
 | Scale + Shift (txt) | Elementwise   | $B \times L_{txt} \times D \times 2$ | $B \times L_{txt} \times D \times 4 \times 2$ |
 
-#### 2.3.2 QKV 投影 (Fused 模式)
+#### 2.3.2 QKV 投影 
+
+- **Fused模式**
 
 | 阶段           | 操作   | 计算负载 (FLOPs)                               | 内存访问 (Bytes)                                             |
 | -------------- | ------ | ---------------------------------------------- | ------------------------------------------------------------ |
 | QKV 投影 (txt) | Linear | $2 \times B \times L_{txt} \times D \times 3D$ | $B \times L_{txt} \times (D + 3D) \times 4 + (D \times 3D + 3D) \times 4$ |
 | Rearrange      | Memory | $0$                                            | $B \times L_{txt} \times 3D \times 4$                        |
 
-#### 2.3.3 QKV 投影 (非 Fused 模式)
+- **非Fused模式**
 
 | 阶段         | 操作   | 计算负载 (FLOPs)                              | 内存访问 (Bytes)                                             |
 | ------------ | ------ | --------------------------------------------- | ------------------------------------------------------------ |
@@ -211,7 +196,7 @@ Double Stream Block 分别处理图像流和文本流,但共享位置编码。
 | K 投影 (txt) | Linear | $2 \times B \times L_{txt} \times D \times D$ | $B \times L_{txt} \times 2D \times 4 + (D \times D + D) \times 4$ |
 | V 投影 (txt) | Linear | $2 \times B \times L_{txt} \times D \times D$ | $B \times L_{txt} \times 2D \times 4 + (D \times D + D) \times 4$ |
 
-#### 2.3.4 QK Normalization
+#### 2.3.3 QK Normalization
 
 | 阶段         | 操作    | 计算负载 (FLOPs)                              | 内存访问 (Bytes)                                       |
 | ------------ | ------- | --------------------------------------------- | ------------------------------------------------------ |
@@ -230,7 +215,9 @@ Double Stream Block 分别处理图像流和文本流,但共享位置编码。
 
 **说明**: L = L_txt + L_img
 
-#### 2.4.2 RoPE 应用 (标准模式)
+#### 2.4.2 RoPE 应用 
+
+- **标准模式**
 
 | 阶段           | 操作     | 计算负载 (FLOPs)                        | 内存访问 (Bytes)                                 |
 | -------------- | -------- | --------------------------------------- | ------------------------------------------------ |
@@ -239,13 +226,13 @@ Double Stream Block 分别处理图像流和文本流,但共享位置编码。
 
 **说明**: RoPE 应用涉及复数乘法和张量重塑
 
-#### 2.4.3 RoPE 应用 (Liger 模式)
+- **Liger模式**
 
 | 阶段             | 操作     | 计算负载 (FLOPs)                        | 内存访问 (Bytes)                                 |
 | ---------------- | -------- | --------------------------------------- | ------------------------------------------------ |
 | Liger RoPE (Q,K) | Rotation | $B \times H \times L \times d \times 6$ | $B \times H \times L \times d \times 4 \times 4$ |
 
-#### 2.4.4 Flash Attention
+#### 2.4.3 Flash Attention
 
 **操作**: Scaled Dot-Product Attention (使用 Flash Attention 优化)
 
@@ -260,7 +247,7 @@ Double Stream Block 分别处理图像流和文本流,但共享位置编码。
 - 理论上: $O(B \times H \times L^2 \times d)$
 - Flash Attention: $O(B \times H \times L \times d)$ (通过分块计算降低 HBM 访问)
 
-#### 2.4.5 拆分注意力输出
+#### 2.4.4 拆分注意力输出
 
 | 阶段         | 操作   | 计算负载 (FLOPs) | 内存访问 (Bytes)               |
 | ------------ | ------ | ---------------- | ------------------------------ |
@@ -325,7 +312,7 @@ $$\text{FLOPs}_{\text{DoubleBlock}} \approx 2 \times B \times L \times D \times 
 
 ---
 
-## 三、Single Stream Block (N_single 层)
+## 三、Single Stream Block
 
 Single Stream Block 处理拼接后的图像和文本序列。
 
@@ -347,7 +334,9 @@ Single Stream Block 处理拼接后的图像和文本序列。
 | LayerNorm     | Normalization | $B \times L \times D \times 5$ | $B \times L \times D \times 4 \times 3$ |
 | Scale + Shift | Elementwise   | $B \times L \times D \times 2$ | $B \times L \times D \times 4 \times 2$ |
 
-### 3.3 并行投影 (Fused 模式)
+### 3.3 并行投影 
+
+- **Fused模式**
 
 **操作**: Linear(D, 3×D + D_mlp)
 
@@ -357,7 +346,7 @@ Single Stream Block 处理拼接后的图像和文本序列。
 | 分离 QKV 和 MLP | Memory | $0$                                                  | $B \times L \times (3D + D_{mlp}) \times 4$                  |
 | Rearrange QKV   | Memory | $0$                                                  | $B \times L \times 3D \times 4$                              |
 
-### 3.4 并行投影 (非 Fused 模式)
+- **非Fused 模式**
 
 | 阶段         | 操作                 | 计算负载 (FLOPs)                                    | 内存访问 (Bytes)                                             |
 | ------------ | -------------------- | --------------------------------------------------- | ------------------------------------------------------------ |
@@ -373,8 +362,6 @@ Single Stream Block 处理拼接后的图像和文本序列。
 | K Norm | RMSNorm | $B \times H \times L \times d \times 4$ | $B \times H \times L \times d \times 4 \times 2$ |
 
 ### 3.6 RoPE 应用
-
-**同 Double Stream Block 2.4.2 或 2.4.3**
 
 | 阶段               | 操作     | 计算负载 (FLOPs)                         | 内存访问 (Bytes)                                 |
 | ------------------ | -------- | ---------------------------------------- | ------------------------------------------------ |
@@ -422,7 +409,7 @@ $$\text{FLOPs}_{\text{SingleBlock}} \approx 2 \times B \times L \times D \times 
 
 ---
 
-## 四、输出层 (Final Layer)
+## 四、输出层
 
 ### 4.1 AdaLN Modulation
 
@@ -522,167 +509,20 @@ $$
 \end{aligned}
 $$
 
----
+## 六、关键公式总结
 
-## 六、分布式并行优化分析
-
-### 6.1 Sequence Parallelism (Ring Attention)
-
-**通信量** (每层):
-$$\text{Comm}_{\text{ring}} = (P - 1) \times B \times \frac{L}{P} \times H \times d \times 4 \times 2$$
-
-**说明**:
-
-- P: 序列并行度
-- 每个 rank 处理 L/P 长度
-- 需要传输 KV 和 dKV (因子 2)
-
-### 6.2 Tensor Parallelism
-
-**通信量** (每层):
-$$\text{Comm}_{\text{TP}} = 2 \times B \times L \times D \times 4 \times 4$$
-
-**说明**:
-
-- 4 次 All-Reduce (QKV proj, attn proj, MLP1, MLP2)
-- 每次通信 BLD 张量
-
-### 6.3 Pipeline Parallelism
-
-**Bubble 比例**:
-$$\text{Bubble} = \frac{(P - 1)}{M}$$
-
-**说明**:
-
-- P: Pipeline stage 数量
-- M: Micro-batch 数量
-
----
-
-## 七、优化技巧说明
-
-### 7.1 Fused Kernels
-
-1. **Fused QKV**: 减少 2 次 kernel launch 和内存访问
-2. **Fused RMSNorm**: 单一 kernel 完成归一化和缩放
-3. **Flash Attention**: 降低 HBM 访问从 $O(L^2)$ 到 $O(L)$
-
-### 7.2 Gradient Checkpointing
-
-**内存节约**:
-$$\text{Memory}_{\text{saved}} \approx (1 - \frac{1}{\sqrt{N}}) \times \text{Activations}$$
-
-**额外计算**:
-$$\text{FLOPs}_{\text{recompute}} \approx \text{FLOPs}_{\text{forward}}$$
-
-### 7.3 混合精度训练
-
-**内存节约**:
-
-- BF16/FP16: 50% 参数和激活内存
-- FP32 主权重: 额外 100% 参数内存
-
-**性能提升**:
-
-- Tensor Core 加速: 2-4× (取决于硬件)
-
----
-
-## 八、计算案例
-
-### 案例参数设置
-
-| 参数     | 值   |
-| -------- | ---- |
-| B        | 1    |
-| L_img    | 4096 |
-| L_txt    | 256  |
-| D        | 3072 |
-| H        | 24   |
-| N_double | 19   |
-| N_single | 38   |
-| C_in     | 16   |
-| C_out    | 16   |
-| P        | 2    |
-
-### 计算结果 (单位: TFLOPs)
-
-| 阶段                 | FLOPs (TFLOPs) | 占比  |
-| -------------------- | -------------- | ----- |
-| 输入预处理           | $\approx 0.3$  | 0.1%  |
-| Double Blocks (19层) | $\approx 180$  | 45%   |
-| Single Blocks (38层) | $\approx 200$  | 50%   |
-| Final Layer          | $\approx 0.2$  | 0.05% |
-| **总计**             | $\approx 400$  | 100%  |
-
-**说明**: 
-
-- Attention: ~220 TFLOPs (55%)
-- MLP: ~160 TFLOPs (40%)
-- Others: ~20 TFLOPs (5%)
-
----
-
-## 九、关键公式总结
-
-### 9.1 矩阵乘法 FLOPs
+### 6.1 矩阵乘法 FLOPs
 
 $$\text{FLOPs}_{\text{matmul}}(M, N, K) = 2 \times M \times N \times K$$
 
-### 9.2 Attention FLOPs
+### 6.2 Attention FLOPs
 
 $$\text{FLOPs}_{\text{attn}} = 4 \times B \times H \times L^2 \times d$$
 
-### 9.3 MLP FLOPs
+### 6.3 MLP FLOPs
 
 $$\text{FLOPs}_{\text{MLP}} = 2 \times B \times L \times D \times (D_{in} + D_{out})$$
 
-### 9.4 内存访问 (通用)
+### 6.4 内存访问 (通用)
 
 $$\text{Bytes} = \sum (\text{Inputs} + \text{Outputs} + \text{Weights}) \times \text{dtype\_size}$$
-
-### 9.5 算术强度
-
-$$\text{Arithmetic Intensity} = \frac{\text{FLOPs}}{\text{Bytes}}$$
-
----
-
-## 十、参考文献和注释
-
-### 10.1 理论基础
-
-- **Flash Attention**: Dao et al., 2022
-- **RoPE**: Su et al., 2021
-- **MMDiT (Flux)**: Black Forest Labs, 2024
-
-### 10.2 计算假设
-
-1. 所有浮点数为 FP32 (4 bytes)
-2. 不考虑 padding 开销
-3. Flash Attention 内存访问按理论最优估计
-4. 忽略小于 O(BLD) 的低阶项
-
-### 10.3 符号约定
-
-- $\times$: 标量乘法
-- $\cdot$: 矩阵乘法
-- $\approx$: 近似 (忽略低阶项)
-- $O(\cdot)$: 渐近复杂度
-
----
-
-## 附录: 典型配置表
-
-| 配置  | D    | H    | N_double | N_single | 参数量 (B) | FLOPs/Token (GFLOPs) |
-| ----- | ---- | ---- | -------- | -------- | ---------- | -------------------- |
-| Small | 1536 | 12   | 12       | 24       | ~2         | ~50                  |
-| Base  | 3072 | 24   | 19       | 38       | ~12        | ~200                 |
-| Large | 4096 | 32   | 24       | 48       | ~20        | ~400                 |
-
-**Token 定义**: 单个序列位置的单次前向传播
-
----
-
-**文档版本**: v1.0  
-**生成日期**: 2025年11月2日  
-**适用模型**: MMDiT (Flux) - Open-Sora 实现

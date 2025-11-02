@@ -2,14 +2,14 @@
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <sitemap>
-    <loc>http://localhost:1313/zh/sitemap.xml</loc>
+    <loc>https://tju-yxq.github.io/zh/sitemap.xml</loc>
     
       <lastmod>2025-11-01T00:00:00+00:00</lastmod>
     
   </sitemap>
   
   <sitemap>
-    <loc>http://localhost:1313/en/sitemap.xml</loc>
+    <loc>https://tju-yxq.github.io/en/sitemap.xml</loc>
     
   </sitemap>
   
