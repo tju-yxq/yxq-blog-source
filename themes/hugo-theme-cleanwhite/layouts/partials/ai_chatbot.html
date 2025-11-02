@@ -1,0 +1,425 @@
+<!--
+  AI 聊天机器人前端组件
+
+  功能:
+  1.  一个浮动按钮，用于打开/关闭聊天窗口。
+  2.  一个完整的聊天界面，包括消息显示区和输入框。
+  3.  使用原生 JavaScript (无依赖) 与后端 API 通信。
+  4.  管理对话历史。
+  5.  显示加载状态和错误信息。
+
+  这是一个有“品味”的前端设计：它自包含、无依赖，并且通过覆盖系统与你的博客解耦。
+-->
+
+<style>
+  /* --- 样式 --- */
+  /* 这是一个自包含的样式块，避免污染你主题的全局 CSS */
+  :root {
+    --ai-chat-primary: #007bff;
+    --ai-chat-bg: #ffffff;
+    --ai-chat-text: #212529;
+    --ai-chat-user-msg-bg: #007bff;
+    --ai-chat-user-msg-text: #ffffff;
+    --ai-chat-bot-msg-bg: #f8f9fa;
+    --ai-chat-bot-msg-text: #212529;
+    --ai-chat-border: #dee2e6;
+  }
+
+  #ai-chat-button {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    width: 60px;
+    height: 60px;
+    background-color: var(--ai-chat-primary);
+    color: white;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 28px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s ease;
+    z-index: 9998;
+  }
+  #ai-chat-button:hover {
+    transform: scale(1.1);
+  }
+
+  #ai-chat-window {
+    position: fixed;
+    bottom: 100px;
+    right: 25px;
+    width: 90%;
+    max-width: 400px;
+    height: 70vh;
+    max-height: 600px;
+    background-color: var(--ai-chat-bg);
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transform: scale(0);
+    transform-origin: bottom right;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 9999;
+  }
+  #ai-chat-window.active {
+    transform: scale(1);
+  }
+
+  #ai-chat-header {
+    background-color: var(--ai-chat-primary);
+    color: white;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  #ai-chat-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+  #ai-chat-close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+  }
+
+  #ai-chat-messages {
+    flex-grow: 1;
+    padding: 15px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ai-chat-message {
+    padding: 10px 15px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+    max-width: 80%;
+    line-height: 1.4;
+  }
+  .ai-chat-message.user {
+    background-color: var(--ai-chat-user-msg-bg);
+    color: var(--ai-chat-user-msg-text);
+    align-self: flex-end;
+  }
+  .ai-chat-message.bot {
+    background-color: var(--ai-chat-bot-msg-bg);
+    color: var(--ai-chat-bot-msg-text);
+    align-self: flex-start;
+  }
+  .ai-chat-message.bot.loading {
+    display: flex;
+    align-items: center;
+  }
+  .ai-chat-message.bot.loading .dot {
+      width: 8px;
+      height: 8px;
+      margin: 0 2px;
+      background-color: #aaa;
+      border-radius: 50%;
+      display: inline-block;
+      animation: ai-chat-blink 1.4s infinite both;
+  }
+  .ai-chat-message.bot.loading .dot:nth-child(2) { animation-delay: 0.2s; }
+  .ai-chat-message.bot.loading .dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes ai-chat-blink {
+      0% { opacity: 0.2; }
+      20% { opacity: 1; }
+      100% { opacity: 0.2; }
+  }
+
+  /* --- Markdown 渲染样式 --- */
+  .ai-chat-message.bot h1,
+  .ai-chat-message.bot h2,
+  .ai-chat-message.bot h3 {
+    margin: 0.5em 0 0.3em 0;
+    font-weight: bold;
+  }
+  .ai-chat-message.bot h1 { font-size: 1.2em; }
+  .ai-chat-message.bot h2 { font-size: 1.1em; }
+  .ai-chat-message.bot h3 { font-size: 1.05em; }
+  
+  .ai-chat-message.bot p {
+    margin: 0.3em 0;
+  }
+  
+  .ai-chat-message.bot code {
+    background-color: rgba(0, 0, 0, 0.1);
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 0.9em;
+  }
+  
+  .ai-chat-message.bot pre {
+    background-color: rgba(0, 0, 0, 0.1);
+    padding: 8px;
+    border-radius: 5px;
+    overflow-x: auto;
+    margin: 0.5em 0;
+  }
+  
+  .ai-chat-message.bot pre code {
+    background: none;
+    padding: 0;
+  }
+  
+  .ai-chat-message.bot ul,
+  .ai-chat-message.bot ol {
+    margin: 0.3em 0;
+    padding-left: 1.2em;
+  }
+  
+  .ai-chat-message.bot li {
+    margin: 0.1em 0;
+  }
+  
+  .ai-chat-message.bot a {
+    color: var(--ai-chat-primary);
+    text-decoration: none;
+  }
+  
+  .ai-chat-message.bot a:hover {
+    text-decoration: underline;
+  }
+  
+  .ai-chat-message.bot strong {
+    font-weight: bold;
+  }
+  
+  .ai-chat-message.bot em {
+    font-style: italic;
+  }
+
+
+  #ai-chat-form {
+    display: flex;
+    padding: 15px;
+    border-top: 1px solid var(--ai-chat-border);
+    flex-shrink: 0;
+  }
+  #ai-chat-input {
+    flex-grow: 1;
+    border: 1px solid var(--ai-chat-border);
+    border-radius: 20px;
+    padding: 10px 15px;
+    font-size: 1rem;
+  }
+  #ai-chat-input:focus {
+    outline: none;
+    border-color: var(--ai-chat-primary);
+  }
+  #ai-chat-form button {
+    background-color: var(--ai-chat-primary);
+    border: none;
+    color: white;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    margin-left: 10px;
+    cursor: pointer;
+    font-size: 18px;
+  }
+
+</style>
+
+<!-- --- HTML 结构 --- -->
+<button id="ai-chat-button">
+  <span>🤖</span>
+</button>
+
+<div id="ai-chat-window">
+  <div id="ai-chat-header">
+    <h3>AI 知识库助手</h3>
+    <button id="ai-chat-close-btn">&times;</button>
+  </div>
+  <div id="ai-chat-messages">
+    <div class="ai-chat-message bot">你好！我是基于本站文章的 AI 助手，有什么可以帮你的吗？</div>
+  </div>
+  <form id="ai-chat-form">
+    <input id="ai-chat-input" type="text" placeholder="输入你的问题..." autocomplete="off">
+    <button type="submit">→</button>
+  </form>
+</div>
+
+<script>
+// --- 脚本 ---
+// 这是一个自执行的匿名函数，避免污染全局命名空间。
+(function() {
+  // --- 配置 ---
+  // 你可以在 hugo.toml 中配置 AI 服务器地址
+  const API_BASE_URL = '{{ .Site.Params.ai_chat_api_url | default "http://127.0.0.1:8000" }}';
+
+  // --- 元素获取 ---
+  const chatButton = document.getElementById('ai-chat-button');
+  const chatWindow = document.getElementById('ai-chat-window');
+  const closeBtn = document.getElementById('ai-chat-close-btn');
+  const chatForm = document.getElementById('ai-chat-form');
+  const chatInput = document.getElementById('ai-chat-input');
+  const messagesContainer = document.getElementById('ai-chat-messages');
+
+  // --- 状态管理 ---
+  let chatHistory = []; // 存储对话历史，格式: [["user query", "bot response"], ...]
+
+  // --- UI 事件监听 ---
+  chatButton.addEventListener('click', () => toggleChatWindow());
+  closeBtn.addEventListener('click', () => toggleChatWindow(false));
+  chatForm.addEventListener('submit', handleFormSubmit);
+
+  function toggleChatWindow(forceOpen) {
+    if (forceOpen === true) {
+      chatWindow.classList.add('active');
+    } else if (forceOpen === false) {
+      chatWindow.classList.remove('active');
+    } else {
+      chatWindow.classList.toggle('active');
+    }
+  }
+
+  async function handleFormSubmit(e) {
+    e.preventDefault();
+    const question = chatInput.value.trim();
+    if (!question) return;
+
+    // 1. 在界面上显示用户的问题
+    addMessage(question, 'user');
+    chatInput.value = '';
+
+    // 2. 显示“正在思考”的加载动画
+    const loadingMessage = addMessage('', 'bot', true);
+    
+    try {
+      // 3. 发送 API 请求
+      const response = await fetch(`${API_BASE_URL}/chat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          question: question,
+          chat_history: chatHistory.map(item => [item.human, item.ai])
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`服务器错误: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      const answer = data.answer;
+
+      // 4. 更新加载消息为真正的回答
+      updateBotMessage(loadingMessage, answer);
+
+      // 5. 更新对话历史
+      chatHistory.push({ human: question, ai: answer });
+
+    } catch (error) {
+      console.error("AI Chat Error:", error);
+      let errorMessage = "抱歉，出现了错误。请稍后再试。";
+      
+      if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+        errorMessage = "无法连接到AI服务器，请检查网络连接或稍后再试。";
+      } else if (error.message.includes('服务器错误')) {
+        errorMessage = `服务器暂时不可用 (${error.message})`;
+      }
+      
+      updateBotMessage(loadingMessage, errorMessage);
+    }
+  }
+
+  function addMessage(text, type, isLoading = false) {
+    const messageDiv = document.createElement('div');
+    messageDiv.classList.add('ai-chat-message', type);
+
+    if (isLoading) {
+      messageDiv.classList.add('loading');
+      messageDiv.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+    } else {
+      // 使用 innerText 来防止 XSS 攻击
+      messageDiv.innerText = text;
+    }
+    
+    messagesContainer.appendChild(messageDiv);
+    scrollToBottom();
+    return messageDiv;
+  }
+
+  // --- Markdown 渲染函数 ---
+  function renderMarkdown(text) {
+    // 防止XSS攻击：先转义HTML特殊字符
+    let html = text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+
+    // 渲染标题 (### ## #)
+    html = html.replace(/^### (.*$)/gm, '<h3>$1</h3>');
+    html = html.replace(/^## (.*$)/gm, '<h2>$1</h2>');
+    html = html.replace(/^# (.*$)/gm, '<h1>$1</h1>');
+
+    // 渲染粗体和斜体
+    html = html.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>');
+    html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+
+    // 渲染代码块
+    html = html.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+    html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+    // 渲染链接
+    html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+
+    // 渲染无序列表
+    html = html.replace(/^[-*+] (.+)$/gm, 'TMPLI_START$1TMPLI_END');
+    
+    // 渲染有序列表
+    html = html.replace(/^\d+\. (.+)$/gm, 'TMPOLI_START$1TMPOLI_END');
+    
+    // 包装列表项
+    html = html.replace(/(TMPLI_START.*?TMPLI_END(\nTMPLI_START.*?TMPLI_END)*)/g, function(match) {
+      return '<ul>' + match.replace(/TMPLI_START/g, '<li>').replace(/TMPLI_END/g, '</li>') + '</ul>';
+    });
+    
+    html = html.replace(/(TMPOLI_START.*?TMPOLI_END(\nTMPOLI_START.*?TMPOLI_END)*)/g, function(match) {
+      return '<ol>' + match.replace(/TMPOLI_START/g, '<li>').replace(/TMPOLI_END/g, '</li>') + '</ol>';
+    });
+
+    // 渲染段落和换行
+    html = html.replace(/\n\n/g, '</p><p>');
+    html = html.replace(/\n/g, '<br>');
+    
+    // 包装在段落中（如果不是以标题、列表或代码块开头）
+    if (html && !html.match(/^(<h[1-6]|<ul|<ol|<pre)/)) {
+      html = '<p>' + html + '</p>';
+    }
+
+    return html;
+  }
+
+  function updateBotMessage(messageDiv, newText) {
+    messageDiv.classList.remove('loading');
+    // 使用我们的Markdown渲染函数
+    const renderedHtml = renderMarkdown(newText);
+    messageDiv.innerHTML = renderedHtml;
+    scrollToBottom();
+  }
+
+  function scrollToBottom() {
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  }
+
+})();
+</script>

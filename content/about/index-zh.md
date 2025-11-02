@@ -1,40 +1,46 @@
-## 关于我
+### About Me
 
-您好，我是**小段子**。一名就读于**天津大学网络空间安全专业**的在读本科生，目前在胡一涛老师实验室下进行科研学习，目前的研究方向是文生视频，对技术充满热情，坚信代码的核心是解决实际问题。我专注于**后端开发**与**数据科学**领域，享受从海量数据中挖掘价值，并用坚实的软件架构将其实现为可靠产品的过程。这个博客是我记录技术思考、项目实践和学习心得的地方。
+Hi, I'm **Duan**, also known as **小段子 (Xiao Duanzi)**. I am an undergraduate student majoring in **Cybersecurity** at **Tianjin University**, currently conducting research in Professor Yitao Hu's lab with a focus on Text-to-Video generation.
 
-## 获奖荣誉
+I am passionate about technology and firmly believe that the core purpose of code is to solve real-world problems. My primary focus is on **Backend Development** and **Data Science**, and I enjoy the process of uncovering value from vast amounts of data and transforming it into reliable products through robust software architecture. This blog is where I document my technical thoughts, project experiences, and learning journey.
 
-| 荣誉名称                                                   | 级别   |
-| :--------------------------------------------------------- | :----- |
-| 2024 Kaggle - NeurIPS 2024 - Lux AI Season 3 铜奖 (Top 15) | 国家级 |
-| NITRIO 国际奖学金                                          | 校级   |
-| 2025 美国大学生数学建模竞赛H奖                             | 国家级 |
-| 全国大学生数学竞赛非数学类组一等奖 (天津市第七)            | 省部级 |
-| 天津市大学生数学竞赛一等奖                                 | 省部级 |
-| 北洋启航自立奖                                             | 校级   |
+### Honors & Awards
 
-## 项目
+| Honor                                                        | Level               |
+| :----------------------------------------------------------- | :------------------ |
+| 2024 Kaggle - NeurIPS 2024 - Lux AI Season 3 Bronze (Top 15) | National            |
+| NITRIO International Scholarship                             | University-level    |
+| 2025 MCM/ICM Honorable Mention                               | National            |
+| National College Mathematics Competition, First Prize (7th in Tianjin) | Provincial/Ministry |
+| Tianjin College Mathematics Competition, First Prize         | Provincial/Ministry |
+| Beiyang Qihang Self-Reliance Award                           | University-level    |
 
-#### 天大点评—校园生活服务平台
+### Projects
 
-- **角色**: 后端开发 & 产品主导
-- **时间**: 2025.03 - 至今
-- **项目描述**: 为提升校园服务透明度，我独立规划并主导开发了“天大点评”平台。项目涵盖食堂、课程、教室设施等多个模块，支持用户点评、评分与排行查询，旨在构建一个开放、互助的校园信息共享社区。
-- **技术栈**: `Spring Boot` / `MyBatis Plus` / `Redis` / `RabbitMQ` / `MySQL` / `Git`
-- **我的贡献**:
-  - 独立完成需求调研、功能规划与产品原型设计。
-  - 负责数据库结构设计，并使用 Spring Boot + MyBatis 栈开发了平台的核心后端服务。
-  - 通过 JWT 实现用户认证与权限控制，保障平台安全。
+#### TJU-Dianping — A Campus Life Service Platform
 
-## 科研
+- **Role**: Backend Developer & Product Lead
+- **Time**: March 2025 - Present
+- **Description**: To improve the transparency and interactivity of campus services, I independently planned and led the development of the "TJU-Dianping" platform. The project covers various modules such as cafeterias, courses, and classroom facilities, allowing users to post reviews, ratings, and browse rankings.
+- **My Contributions**:
+  - Independently conducted requirement analysis, feature planning, and designed product prototypes.
+  - Designed the database schema and developed the core backend services using a tech stack of `Spring Boot`, `MyBatis`, `Redis`, `RabbitMQ`, and `MySQL`.
+  - Implemented user authentication and authorization using JWT to ensure platform security.
+  - Wrote RESTful APIs to ensure seamless communication between the frontend and backend.
 
-#### 数智化餐饮服务系统下消费者行为与运营管理策略研究
+### Research
 
-- **角色**: 数据分析负责人
-- **级别**: 国家级大学生创新创业训练计划项目 (国家级大创)
-- **时间**: 2024.04 - 2026.04 (预计)
-- **研究简介**: 本项目结合排队经济学与数据科学，旨在探究数智时代下的消费者行为规律，为餐饮服务商提供最优运营策略。
-- **我的贡献**:
-  - 主导数据分析工作，负责对初期收集的近万条餐饮交易数据进行处理与分析。
-  - 综合运用 `Python`, `SQL` 等工具进行数据挖掘，并借助 `Tableau` 完成数据可视化。
-  - 成功提炼出 5 个关键的消费者行为模式，为项目后续的策略研究提供了坚实的数据支撑。
+#### Research on Consumer Behavior and Operational Management Strategies in a Digital and Intelligent Catering Service System
+
+- **Role**: Data Analysis Lead
+- **Level**: National College Students' Innovation and Entrepreneurship Training Program
+- **Time**: April 2024 - April 2026 (Expected)
+- **Description**: This project combines queuing economics with data science to explore consumer behavior patterns in the digital era, aiming to provide optimal strategies for catering service providers.
+- **My Contributions**:
+  - Led the data analysis efforts, responsible for processing and analyzing nearly 10,000 initial transaction records.
+  - Utilized `Python` and `SQL` for data mining and employed `Tableau` for data visualization.
+  - Successfully identified 5 key consumer behavior patterns, providing a solid data foundation for the project's subsequent research.
+
+---
+
+*Thank you for visiting! Feel free to reach out if you're interested in my content.*

@@ -2,8 +2,19 @@ baseurl = "https://tju-yxq.github.io/"
 title = "小段子的技术博客"
 theme = "hugo-theme-cleanwhite"
 languageCode = "zh-CN"
+defaultContentLanguage = "zh"
 preserveTaxonomyNames = true
 hasCJKLanguage = true
+
+[languages]
+  [languages.zh]
+    weight = 1
+    languageCode = "zh-CN"
+    title = "小段子的技术博客"
+  [languages.en]
+    weight = 2
+    languageCode = "en-US"
+    title = "Xiao Duanzi's Tech Blog"
 
 [services]
   # Enable comments by entering your Disqus shortname
@@ -66,6 +77,10 @@ home = ["HTML", "RSS", "Algolia"]
   artalk_enable = true
   artalk_server = "https://xxx.xxx.com"
   artalk_site = "xxx blog"
+
+  # AI Chatbot settings
+  ai_chat_enable = true
+  ai_chat_api_url = "http://localhost:8000"
 
   #Enable wechat pay & alipay to allow readers send reward money if they like the articles 
   reward = true 
@@ -130,7 +145,7 @@ home = ["HTML", "RSS", "Algolia"]
   #href =  "/notes/"
   [[params.additional_menus]]
   title =  "关于"
-  href =  "/about//?lang=zh/"
+  href =  "/about/"
 
 [outputFormats.Algolia]
 baseName = "algolia"

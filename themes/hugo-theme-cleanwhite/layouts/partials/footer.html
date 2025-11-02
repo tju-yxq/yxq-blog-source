@@ -443,3 +443,8 @@
 })();
 </script>
 {{ end }}
+
+<!-- AI Chatbot -->
+{{ if .Site.Params.ai_chat_enable }}
+{{ partial "ai_chatbot.html" . }}
+{{ end }}
